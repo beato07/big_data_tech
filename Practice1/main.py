@@ -27,6 +27,23 @@ def print_areas():
         for key, value in dictionary.items():
             print(f"{key}: {value}")
 
+def calculate(x, y, op):
+    if op == "+":
+        print(x + y)
+    elif op == "-":
+        print(x - y)
+    elif op == "/":
+        print(x / y)
+    elif op == "//":
+        print(x / y)
+    elif op == "abs":
+        print(abs(x), abs(y))
+    elif op == "**":
+        print(x ** y)
+
 
 if __name__ == '__main__':
+    # Вывести площади фигур
     print_areas()
+    # различные операции с двумя переменными
+    calculate(-42, -52, 'abs')
