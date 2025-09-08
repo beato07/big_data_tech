@@ -63,6 +63,21 @@ def generate_sequence(N):
     print(*num)
 
 
+def calculate_letter_sums(A, B):
+    dict = {}
+    sumA, sumB, sumC = 0, 0, 0
+    for i in range(len(A)):
+        for j in range(len(B)):
+            if B[j] == 'a' and i == j:
+                sumA += A[i]
+            elif B[j] == 'b' and i == j:
+                sumB += A[i]
+            elif B[j] == 'c' and i == j:
+                sumC += A[i]
+    dict.update({'a': sumA, 'b': sumB, 'c': sumC})
+    print(dict)
+
+
 if __name__ == '__main__':
 
     # Площадь фигур
@@ -76,3 +91,5 @@ if __name__ == '__main__':
     sum_squares(num)
     # Последовательность чисел, длинною N
     generate_sequence(7)
+    # Сумма букв на основе двух списков
+    calculate_letter_sums([1, 2, 3, 4, 2, 1, 3, 4, 5, 6, 5, 4, 3, 2], ['a', 'b', 'c', 'c', 'c', 'b', 'a', 'c', 'a', 'a', 'b', 'c', 'b', 'a'])
