@@ -1,4 +1,6 @@
 from math import pi
+from sklearn.datasets import fetch_california_housing
+import pandas as pd
 
 
 def get_figure_area(figures, figure_name, a, b, r):
@@ -78,8 +80,11 @@ def calculate_letter_sums(A, B):
     print(dict)
 
 
-if __name__ == '__main__':
+def avg(df):
+    return df.mean()
 
+
+if __name__ == '__main__':
     # Площадь фигур
     print_areas()
     # Различные операции с двумя переменными
@@ -93,3 +98,17 @@ if __name__ == '__main__':
     generate_sequence(7)
     # Сумма букв на основе двух списков
     calculate_letter_sums([1, 2, 3, 4, 2, 1, 3, 4, 5, 6, 5, 4, 3, 2], ['a', 'b', 'c', 'c', 'c', 'b', 'a', 'c', 'a', 'a', 'b', 'c', 'b', 'a'])
+    # Библиотека sklearn
+    data = fetch_california_housing(as_frame=True) #as_frame=True - данные должны быть возвращены в виде Pandas DataFrame
+    df = pd.DataFrame(data.data, columns=data.feature_names)
+    # Использование метода info() для дата фрейма
+    df.info()
+    # Проверка на пропущенные значения
+    print(df.isna().sum())
+    # Вывод записей, где возраст домов > 50 и население более 2500 человек
+    print(df.loc[(df['HouseAge'] > 50) & (df['Population'] > 2500), ['HouseAge', 'Population']])
+    # Максимальное и минимальное значение медианной стоимости дома
+    df['MedHouseVal'] = data.target
+    print(f"{min(df['MedHouseVal']) * 100000:.2f}$, {max(df['MedHouseVal']) * 100000:.2f}$")
+    # Метод apply()
+    print(df.apply(avg, axis=0))
