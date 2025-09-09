@@ -67,16 +67,8 @@ def generate_sequence(N):
 
 def calculate_letter_sums(A, B):
     dict = {}
-    sumA, sumB, sumC = 0, 0, 0
-    for i in range(len(A)):
-        for j in range(len(B)):
-            if B[j] == 'a' and i == j:
-                sumA += A[i]
-            elif B[j] == 'b' and i == j:
-                sumB += A[i]
-            elif B[j] == 'c' and i == j:
-                sumC += A[i]
-    dict.update({'a': sumA, 'b': sumB, 'c': sumC})
+    for letter, value in zip(B, A):
+        dict[letter] = dict.get(letter, 0) + value
     print(dict)
 
 
