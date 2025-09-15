@@ -21,20 +21,21 @@ def load_clean_wine_data():
 
 
 def draw_bar_chart():
-    x_data = ['14.09.2015', '06.06.2017', '01.03.2020', '20.07.2023']
-    y_date = [1813.70, 4206.14, 2750.52, 749.99]
+
+    labels = ['Oxygen','Hydrogen','Carbon_Dioxide','Nitrogen']
+    values = [4500,2500,1053,500]
 
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=x_data, y=y_date,
-                         marker=dict(color=y_date,
+    fig.add_trace(go.Bar(x=labels, y=values,
+                         marker=dict(color=values,
                                      coloraxis='coloraxis',
-                                     line=dict(color='black', width=2))))
+                                     line=dict(color='#000000', width=2))))
     fig.update_layout(
-        title="Diagram",
+        title='Bar chart',
         title_x=0.5,
         title_font_size=20,
-        xaxis_title = 'Date', xaxis_title_font_size=14,
-        yaxis_title='Value', yaxis_title_font_size=14,
+        xaxis_title='Gas', xaxis_title_font_size=14,
+        yaxis_title='Volume', yaxis_title_font_size=14,
         height=700)
     fig.update_xaxes(
         tickangle=315,
@@ -43,6 +44,25 @@ def draw_bar_chart():
     fig.update_yaxes(
         gridwidth=2,
         gridcolor='ivory')
+    fig.show()
+
+
+def draw_pie_chart():
+
+    labels = ['Oxygen','Hydrogen','Carbon_Dioxide','Nitrogen']
+    values = [4500,2500,1053,500]
+
+    colors = ['gold', 'mediumturquoise', 'darkorange', 'lightgreen']
+    fig = go.Figure(data = [go.Pie(
+        labels=labels,
+        values=values,
+        marker=dict(colors=colors,
+                    line=dict(color='#000000', width=2)))])
+    fig.update_layout(
+        title='Pie chart',
+        title_x=0.5,
+        title_font_size=20,
+        height=700)
     fig.show()
 
 
@@ -56,3 +76,6 @@ if __name__ == '__main__':
 
     # Построение столбчатой диаграммы
     draw_bar_chart()
+
+    # Построение круговой диаграммы
+    draw_pie_chart()
