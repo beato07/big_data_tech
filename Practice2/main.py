@@ -62,7 +62,8 @@ def draw_pie_chart():
         title='Pie chart',
         title_x=0.5,
         title_font_size=20,
-        height=700)
+        height=700,
+        font_size=14)
     fig.show()
 
 
