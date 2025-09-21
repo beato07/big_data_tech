@@ -4,6 +4,12 @@ import plotly.graph_objects as go
 
 import matplotlib.pyplot as plt
 
+from sklearn.datasets import fetch_openml
+from sklearn.manifold import TSNE
+import numpy as np
+import seaborn as sns
+from sklearn import preprocessing
+
 
 def load_clean_wine_data(df):
     if df.isna().any().any():
@@ -13,7 +19,6 @@ def load_clean_wine_data(df):
 
 
 def draw_bar_chart():
-
     labels = ['Oxygen','Hydrogen','Carbon_Dioxide','Nitrogen']
     values = [4500,2500,1053,500]
 
@@ -40,7 +45,6 @@ def draw_bar_chart():
 
 
 def draw_pie_chart():
-
     labels = ['Oxygen','Hydrogen','Carbon_Dioxide','Nitrogen']
     values = [4500,2500,1053,500]
 
@@ -60,7 +64,6 @@ def draw_pie_chart():
 
 
 def customize_plot(ax, x_values, y_values, y_label):
-
     ax.plot(x_values, y_values,
             c='crimson',
             marker='o',
@@ -83,27 +86,53 @@ def draw_line_graph():
     sorted_df = df.sort_values(by=['alcohol'])
     x_values = sorted_df['alcohol']
 
-    fig1, ax1 = plt.subplots()
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(8, 12))
+
     y_values = sorted_df['malic_acid']
     ax1.scatter(x_values, y_values)
     customize_plot(ax1, x_values, y_values, 'malic acid')
-    plt.show()
 
-    fig2, ax2 = plt.subplots()
     y_values = sorted_df['proanthocyanins']
     ax2.scatter(x_values, y_values)
     customize_plot(ax2, x_values, y_values, 'proanthocyanins')
-    plt.show()
 
-    fig3, ax3 = plt.subplots()
     y_values = sorted_df['proline']
     ax3.scatter(x_values, y_values)
     customize_plot(ax3, x_values, y_values, 'proline')
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_tsne():
+    mnist = fetch_openml('mnist_784', version=1)
+    x, y = mnist.data, mnist.target
+
+    random_images = np.random.choice(len(x), 1000, replace=False)
+    x_sample = x.iloc[random_images]
+    y_sample = y[random_images]
+
+    scaler = preprocessing.MinMaxScaler()
+    x_scaled = scaler.fit_transform(x_sample)
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+
+    perplexity = [5, 25, 50]
+    for i, perplexity in enumerate(perplexity):
+        T = TSNE(n_components=2, perplexity=perplexity, random_state=123)
+        TSNE_features = T.fit_transform(x_scaled)
+
+        mnist_df = pd.DataFrame(data=TSNE_features, columns=['x', 'y'])
+        mnist_df['label'] = y_sample.values
+
+        sns.scatterplot(x='x', y='y', hue='label', data=mnist_df, palette='bright', ax=axes[i])
+        axes[i].set_title(f'perplexity={perplexity}')
+
+    plt.tight_layout()
     plt.show()
 
 
 if __name__ == '__main__':
-
     # Выгрузка многомерных данных
     data = load_wine(as_frame=True)
     df = pd.DataFrame(data.data, columns=data.feature_names)
@@ -120,3 +149,6 @@ if __name__ == '__main__':
 
     # Построение линейного графика
     draw_line_graph()
+
+    # T-SNE визуализация для набора данных MNIST
+    plot_tsne()
