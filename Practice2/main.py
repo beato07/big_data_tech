@@ -7,6 +7,7 @@ import umap
 from sklearn import preprocessing
 from sklearn.datasets import fetch_openml, load_wine
 from sklearn.manifold import TSNE
+import time
 
 
 def load_clean_wine_data(df):
@@ -115,6 +116,7 @@ def plot_tsne():
 
     fig, ax = plt.subplots(1, 3, figsize=(18, 6))
 
+    start_time = time.time()
     perplexity = [5, 25, 50]
     for i, perplexity in enumerate(perplexity):
         T = TSNE(n_components=2, perplexity=perplexity, random_state=123)
@@ -131,6 +133,9 @@ def plot_tsne():
 
     plt.tight_layout()
     plt.show()
+
+    end_time = time.time()
+    print(f'TSNE total time: {end_time - start_time}')
 
 
 def plot_umap():
@@ -149,6 +154,7 @@ def plot_umap():
 
     fig, ax = plt.subplots(len(n_n), len(m_d), figsize=(12, 18))
 
+    start_time = time.time()
     for i, n_neighbors in enumerate(n_n):
         for j, min_dist in enumerate(m_d):
             embedding = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, random_state=123).fit_transform(x_scaled)
@@ -172,6 +178,9 @@ def plot_umap():
 
     plt.tight_layout(h_pad=3.0, w_pad=3.0)
     plt.show()
+
+    end_time = time.time()
+    print(f'UMAP total time: {end_time - start_time}')
 
 
 if __name__ == '__main__':
