@@ -1,14 +1,12 @@
-import pandas as pd
-from sklearn.datasets import load_wine
-import plotly.graph_objects as go
-
-import matplotlib.pyplot as plt
-
-from sklearn.datasets import fetch_openml
-from sklearn.manifold import TSNE
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.graph_objects as go
 import seaborn as sns
+import umap
 from sklearn import preprocessing
+from sklearn.datasets import fetch_openml, load_wine
+from sklearn.manifold import TSNE
 
 
 def load_clean_wine_data(df):
@@ -108,14 +106,14 @@ def plot_tsne():
     mnist = fetch_openml('mnist_784', version=1)
     x, y = mnist.data, mnist.target
 
-    random_images = np.random.choice(len(x), 1000, replace=False)
-    x_sample = x.iloc[random_images]
-    y_sample = y[random_images]
+    random_img = np.random.choice(len(x), 1000, replace=False)
+    x_sample = x.iloc[random_img]
+    y_sample = y[random_img]
 
     scaler = preprocessing.MinMaxScaler()
     x_scaled = scaler.fit_transform(x_sample)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, ax = plt.subplots(1, 3, figsize=(18, 6))
 
     perplexity = [5, 25, 50]
     for i, perplexity in enumerate(perplexity):
@@ -125,10 +123,54 @@ def plot_tsne():
         mnist_df = pd.DataFrame(data=TSNE_features, columns=['x', 'y'])
         mnist_df['label'] = y_sample.values
 
-        sns.scatterplot(x='x', y='y', hue='label', data=mnist_df, palette='bright', ax=axes[i])
-        axes[i].set_title(f'perplexity={perplexity}')
+        sns.scatterplot(x='x', y='y', hue='label', data=mnist_df, palette='bright', ax=ax[i])
+
+        ax[i].set_xlabel('')
+        ax[i].set_ylabel('')
+        ax[i].set_title(f'perplexity={perplexity}')
 
     plt.tight_layout()
+    plt.show()
+
+
+def plot_umap():
+    mnist = fetch_openml('mnist_784', version=1)
+    x, y = mnist.data, mnist.target
+
+    random_img = np.random.choice(len(x), 1000, replace=False)
+    x_sample = x.iloc[random_img]
+    y_sample = y[random_img]
+
+    scaler = preprocessing.MinMaxScaler()
+    x_scaled = scaler.fit_transform(x_sample)
+
+    n_n = (5, 25, 50)
+    m_d = (0.1, 0.6)
+
+    fig, ax = plt.subplots(len(n_n), len(m_d), figsize=(12, 18))
+
+    for i, n_neighbors in enumerate(n_n):
+        for j, min_dist in enumerate(m_d):
+            embedding = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, random_state=123).fit_transform(x_scaled)
+
+            df_um = pd.DataFrame({
+                'x': embedding[:, 0],
+                'y': embedding[:, 1],
+                'label': y_sample.values
+            })
+
+            sns.scatterplot(
+                x='x',
+                y='y',
+                hue='label',
+                data=df_um,
+                ax=ax[i, j]
+            )
+            ax[i, j].set_xlabel('')
+            ax[i, j].set_ylabel('')
+            ax[i, j].set_title(f'n_neighbors={n_neighbors}, min_dist={min_dist},')
+
+    plt.tight_layout(h_pad=3.0, w_pad=3.0)
     plt.show()
 
 
@@ -152,3 +194,6 @@ if __name__ == '__main__':
 
     # T-SNE визуализация для набора данных MNIST
     plot_tsne()
+
+    # UMAP визуализация для набора данных MNIST
+    plot_umap()
