@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
-from matplotlib.pyplot import title
 
 
 def show_menu():
@@ -19,6 +18,7 @@ def show_menu():
     print("7. Построить 95% и 99% доверительный интервал для среднего значения расходов и среднего значения индекса массы тела")
     print("8. Проверить распределения следующих признаков на нормальность: индекс массы тела, расходы")
     print("9. Загрузить данные из файла \"ECDCCases.csv\"")
+    print("10. Проверить в данных наличие пропущенных значений.")
     print("0. Выход")
     print("=" * 50)
 
@@ -135,6 +135,29 @@ def task_9():
     print(df)
 
 
+def task_10():
+    df = pd.read_csv('ECDCCases.csv')
+
+    print(f'Кол-во пропущенных значений составляет {(df.isnull().sum().sum() / df.size) * 10000:.2f}%')
+
+    missing_sorted = (df.isnull().sum()).sort_values(ascending=False)
+    columns_to_remove = missing_sorted.head(2).index.tolist()
+    df = df.drop(columns_to_remove, axis=1)
+
+    categorical_columns = df.select_dtypes(include=['object']).columns
+    numeric_columns = df.select_dtypes(include=['int64', 'float64']).columns
+
+    for column in categorical_columns:
+        if df[column].isnull().sum() > 0:
+            df.fillna({column: 'other'}, inplace=True)
+
+    for column in numeric_columns:
+        if df[column].isnull().sum() > 0:
+            df.fillna({column: df[column].median()}, inplace=True)
+
+    print(df.isnull().sum())
+
+
 def main():
     task_functions = {
         '1': task_1,
@@ -145,13 +168,14 @@ def main():
         '6': task_6,
         '7': task_7,
         '8': task_8,
-        '9': task_9
+        '9': task_9,
+        '10': task_10
         # '': task_all
     }
 
     while True:
         show_menu()
-        choice = input("\nВведите номер задания (1-9): ").strip()
+        choice = input("\nВведите номер задания (1-10): ").strip()
 
         if choice == '0':
             print("Выход из программы.")
