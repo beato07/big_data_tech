@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+from matplotlib.pyplot import title
 
 
 def show_menu():
@@ -17,6 +18,7 @@ def show_menu():
           "Найти стандартное отклонение и среднее для полученных распределений")
     print("7. Построить 95% и 99% доверительный интервал для среднего значения расходов и среднего значения индекса массы тела")
     print("8. Проверить распределения следующих признаков на нормальность: индекс массы тела, расходы")
+    print("9. Загрузить данные из файла \"ECDCCases.csv\"")
     print("0. Выход")
     print("=" * 50)
 
@@ -34,6 +36,7 @@ def task_2():
 def task_3():
     df = pd.read_csv('insurance.csv')
     df.hist(color='green', edgecolor='black')
+    plt.tight_layout()
     plt.show()
 
 
@@ -64,22 +67,16 @@ def task_4():
 
 def task_5():
     df = pd.read_csv('insurance.csv')
+    fig, ax = plt.subplots(2, 2)
 
-    fig = plt.figure(figsize=(12, 10))
-
-    ax1 = fig.add_subplot(2, 2, 1)
-    ax2 = fig.add_subplot(2, 2, 2)
-    ax3 = fig.add_subplot(2, 2, 3)
-    ax4 = fig.add_subplot(2, 2, 4)
-
-    ax1.boxplot(df['age'], tick_labels=['age'], vert=False, patch_artist=True)
-    ax1.grid() #True
-    ax2.boxplot(df['bmi'], tick_labels=['bmi'], vert=False, patch_artist=True)
-    ax2.grid()
-    ax3.boxplot(df['children'], tick_labels=['children'], vert=False, patch_artist=True)
-    ax3.grid()
-    ax4.boxplot(df['charges'], tick_labels=['charges'], vert=False, patch_artist=True)
-    ax4.grid()
+    ax[0, 0].boxplot(df['age'], tick_labels=['age'], vert=False, patch_artist=True)
+    ax[0, 0].grid(True)
+    ax[0, 1].boxplot(df['bmi'], tick_labels=['bmi'], vert=False, patch_artist=True)
+    ax[0, 1].grid(True)
+    ax[1, 0].boxplot(df['children'], tick_labels=['children'], vert=False, patch_artist=True)
+    ax[1, 0].grid(True)
+    ax[1, 1].boxplot(df['charges'], tick_labels=['charges'], vert=False, patch_artist=True)
+    ax[1, 1].grid(True)
 
     plt.tight_layout()
     plt.show()
@@ -133,6 +130,11 @@ def task_8():
     plt.show()
 
 
+def task_9():
+    df = pd.read_csv('ECDCCases.csv')
+    print(df)
+
+
 def main():
     task_functions = {
         '1': task_1,
@@ -142,13 +144,14 @@ def main():
         '5': task_5,
         '6': task_6,
         '7': task_7,
-        '8': task_8
+        '8': task_8,
+        '9': task_9
         # '': task_all
     }
 
     while True:
         show_menu()
-        choice = input("\nВведите номер задания (1-8): ").strip()
+        choice = input("\nВведите номер задания (1-9): ").strip()
 
         if choice == '0':
             print("Выход из программы.")
