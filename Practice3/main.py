@@ -19,6 +19,9 @@ def show_menu():
     print("8. Проверить распределения следующих признаков на нормальность: индекс массы тела, расходы")
     print("9. Загрузить данные из файла \"ECDCCases.csv\"")
     print("10. Проверить в данных наличие пропущенных значений.")
+    print("11. Посмотреть статистику по данным, используя describe()."
+          "Сделать выводы о том, какие признаки содержат выбросы. "
+          "Посмотреть, для каких стран количество смертей в день превысило 3000 и сколько таких дней было.")
     print("0. Выход")
     print("=" * 50)
 
@@ -158,6 +161,13 @@ def task_10():
     print(df.isnull().sum())
 
 
+def task_11():
+    df = pd.read_csv('ECDCCases.csv')
+    high_deaths = df[df['deaths'] > 3000]
+    country_high_deaths = high_deaths.groupby('countriesAndTerritories').size().reset_index(name='days')
+    print(country_high_deaths)
+
+
 def main():
     task_functions = {
         '1': task_1,
@@ -169,13 +179,14 @@ def main():
         '7': task_7,
         '8': task_8,
         '9': task_9,
-        '10': task_10
+        '10': task_10,
+        '11': task_11,
         # '': task_all
     }
 
     while True:
         show_menu()
-        choice = input("\nВведите номер задания (1-10): ").strip()
+        choice = input("\nВведите номер задания (1-11): ").strip()
 
         if choice == '0':
             print("Выход из программы.")
