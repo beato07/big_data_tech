@@ -113,7 +113,37 @@ def task_6():
 
 
 def task_7():
-    pass
+    df = pd.read_csv('insurance.csv')
+
+    mean_charges = df['charges'].mean()
+    mean_bmi = df['bmi'].mean()
+
+    ci_95_c = stats.t.interval(0.95, len(df['charges']) - 1, loc=mean_charges, scale=stats.sem(df['charges']))
+    ci_99_c = stats.t.interval(0.99, len(df['charges']) - 1, loc=mean_charges, scale=stats.sem(df['charges']))
+
+    ci_95_b = stats.t.interval(0.95, len(df['bmi']) - 1, loc=mean_bmi, scale=stats.sem(df['bmi']))
+    ci_99_b = stats.t.interval(0.99, len(df['bmi']) - 1, loc=mean_bmi, scale=stats.sem(df['bmi']))
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    ax1.errorbar(['95% ДИ', '99% ДИ'], [mean_charges, mean_charges],
+                 yerr=[[mean_charges - ci_95_c[0], mean_charges - ci_99_c[0]],
+                       [ci_95_c[1] - mean_charges, ci_99_c[1] - mean_charges]],
+                 fmt='o', capsize=5)
+    ax1.set_title('Доверительные интервалы для charges')
+    ax1.set_ylabel('Charges')
+    ax1.grid(True)
+
+    ax2.errorbar(['95% ДИ', '99% ДИ'], [mean_bmi, mean_bmi],
+                yerr=[[mean_bmi - ci_95_b[0], mean_bmi - ci_99_b[0]],
+                      [ci_95_b[1] - mean_bmi, ci_99_b[1] - mean_bmi]],
+                fmt='o', capsize=5)
+    ax2.set_title('Доверительные интервалы для BMI')
+    ax2.set_ylabel('BMI')
+    ax2.grid(True)
+
+    plt.tight_layout()
+    plt.show()
 
 
 def task_8():
