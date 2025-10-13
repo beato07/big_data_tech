@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
-from scipy.stats import shapiro
 
 
 def show_menu():
@@ -22,6 +21,7 @@ def show_menu():
     print("11. Посмотреть статистику по данным, используя describe(). Посмотреть, для каких стран количество смертей в день превысило 3000 и сколько таких дней было.")
     print("12. Найти дублирование данных. Удалить дубликаты.")
     print("13. Загрузить данные из файла “bmi.csv”. Взять оттуда две выборки.")
+    print('14. Кубик бросили 600 раз. С помощью критерия Хи-квадрат проверить, является ли полученное распределение равномерным.')
     print("0. Выход")
     print("=" * 50)
 
@@ -180,8 +180,8 @@ def task_13():
     southwest_bmi = df[df['region'] == 'southwest']['bmi']
 
     print("\n=== ПРОВЕРКА НА НОРМАЛЬНОСТЬ (Шапиро-Уилк) ===")
-    stat_nw, p_nw = shapiro(northwest_bmi)
-    stat_sw, p_sw = shapiro(southwest_bmi)
+    stat_nw, p_nw = stats.shapiro(northwest_bmi)
+    stat_sw, p_sw = stats.shapiro(southwest_bmi)
     print(f"Статистика: {stat_nw} , {stat_sw}\np-значение: {p_nw}, {p_sw}")
 
     print("\n=== ПРОВЕРКА ГОМОГЕННОСТИ ДИСПЕРСИЙ (Бартлетт) ===")
@@ -189,8 +189,15 @@ def task_13():
     print(f"Статистика: {bartlett_test}\np-значение: {p_value}")
 
     print("\n=== T-КРИТЕРИЙ СТЬЮДЕНТА ===")
-    t_static, p_value = stats.ttest_ind(northwest_bmi, southwest_bmi, equal_var=True)
-    print(f"Статистика: {t_static}\np-значение: {p_value}")
+    t_stat, p_value = stats.ttest_ind(northwest_bmi, southwest_bmi, equal_var=True)
+    print(f"Статистика: {t_stat}\np-значение: {p_value}")
+
+
+def task_14():
+    print("\n=== КРИТЕРИЙ ХИ-КВАДРАТ ===")
+    data = [97, 98, 109, 95, 97, 104]
+    stat, p_value = stats.chisquare(data)
+    print(f"Статистика: {stat}\np-значение: {p_value}")
 
 
 def main():
@@ -208,6 +215,7 @@ def main():
         '11': task_11,
         '12': task_12,
         '13': task_13,
+        '14': task_14,
         # '': task_all
     }
 
