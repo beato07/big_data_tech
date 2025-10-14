@@ -69,6 +69,33 @@ def task_4():
           f'\nСтандартное отклонение:   \n{std.to_string()}\n'
           f'\nМежквартильный размах:    \n{IQR.to_string()}\n')
 
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+
+    # Гистограмма для BMI
+    ax1.hist(df['bmi'], bins=30, alpha=0.7, color='skyblue', edgecolor='black')
+    ax1.axvline(mean['bmi'], color='red', linestyle='--', linewidth=2, label=f'Среднее: {mean["bmi"]:.2f}')
+    ax1.axvline(med['bmi'], color='green', linestyle='--', linewidth=2, label=f'Медиана: {med["bmi"]:.2f}')
+    ax1.axvline(moda['bmi'], color='blue', linestyle='--', linewidth=2, label=f'Мода: {moda["bmi"]:.2f}')
+    ax1.set_xlabel('Индекс массы тела (BMI)')
+    ax1.set_ylabel('Частота')
+    ax1.set_title('Распределение индекса массы тела')
+    ax1.legend()
+    ax1.grid(alpha=0.3)
+
+    # Гистограмма для Charges
+    ax2.hist(df['charges'], bins=30, alpha=0.7, color='lightcoral', edgecolor='black')
+    ax2.axvline(mean['charges'], color='red', linestyle='--', linewidth=2, label=f'Среднее: {mean["charges"]:.2f}')
+    ax2.axvline(med['charges'], color='green', linestyle='--', linewidth=2, label=f'Медиана: {med["charges"]:.2f}')
+    ax2.axvline(moda['charges'], color='blue', linestyle='--', linewidth=2, label=f'Мода: {moda["charges"]:.2f}')
+    ax2.set_xlabel('Расходы ($)')
+    ax2.set_ylabel('Частота')
+    ax2.set_title('Распределение расходов')
+    ax2.legend()
+    ax2.grid(alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
 
 def task_5():
     df = pd.read_csv('insurance.csv')
