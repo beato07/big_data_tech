@@ -125,6 +125,17 @@ def task_7():
     ci_95_b = stats.t.interval(0.95, len(df['bmi']) - 1, loc=mean_bmi, scale=stats.sem(df['bmi']))
     ci_99_b = stats.t.interval(0.99, len(df['bmi']) - 1, loc=mean_bmi, scale=stats.sem(df['bmi']))
 
+    # Вывод числовых значений
+    print("\n=== ДОВЕРИТЕЛЬНЫЕ ИНТЕРВАЛЫ ДЛЯ CHARGES ===")
+    print(f"Среднее значение: {mean_charges:.2f}")
+    print(f"95% ДИ: [{ci_95_c[0]:.2f}, {ci_95_c[1]:.2f}]")
+    print(f"99% ДИ: [{ci_99_c[0]:.2f}, {ci_99_c[1]:.2f}]")
+
+    print("\n=== ДОВЕРИТЕЛЬНЫЕ ИНТЕРВАЛЫ ДЛЯ BMI ===")
+    print(f"Среднее значение: {mean_bmi:.2f}")
+    print(f"95% ДИ: [{ci_95_b[0]:.2f}, {ci_95_b[1]:.2f}]")
+    print(f"99% ДИ: [{ci_99_b[0]:.2f}, {ci_99_b[1]:.2f}]")
+
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
     ax1.errorbar(['95% ДИ', '99% ДИ'], [mean_charges, mean_charges],
