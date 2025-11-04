@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+import scipy.stats as stats
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
 
 def task_1():
@@ -64,6 +68,86 @@ def task_2():
     print(f"    MSE: {mean_squared_error(model_y_sk, y):.2f}")
 
 
+def task_3():
+    """
+    Выполняет комплексный статистический анализ влияния региона и пола на индекс массы тела (BMI).
+
+    Функция проводит серию статистических тестов для исследования взаимосвязи между
+    географическим регионом, полом и показателями BMI на данных медицинского страхования.
+
+    Анализ включает:
+    1. Предварительный анализ данных (размерность, пропущенные значения, уникальные регионы)
+    2. Однофакторный ANOVA тест для проверки влияния региона на BMI
+    3. Двухфакторный ANOVA тест для проверки влияния региона и пола на BMI
+    4. Попарные сравнения t-критерием Стьюдента между регионами
+    5. Post-hoc тесты Тьюки для детального анализа различий
+    6. Визуализацию результатов
+    """
+    sl = pd.read_csv('insurance.csv')
+    print(f"\nРазмерность данных: {sl.shape}")
+    print(f"\nКолонки: {list(sl.columns)}")
+    print(f"\nПроверка на пропущенные значения:\n{sl.isnull().sum()}")
+    print(f"\nСписок уникальных  регионов: {list(sl['region'].unique())}")
+
+    groups = sl.groupby('region')['bmi'].apply(list)
+
+    southwest = groups['southwest']
+    southeast = groups['southeast']
+    northwest = groups['northwest']
+    northeast = groups['northeast']
+
+    print(sl[['region', 'bmi']].head(), end="\n\n")
+
+    print(f"=== ANOVA тест через через библиотеку Scipy ===")
+    result = stats.f_oneway(southwest, southeast, northwest, northeast)
+    print(f"F-статистика: {result.statistic:.4f}")
+    print(f"P-значение: {result.pvalue:.30f}")
+
+    model = ols('age ~ bmi', data=sl).fit()
+    anova_results = sm.stats.anova_lm(model, typ=2)
+
+    print(f"\n=== ANOVA тест через библиотеку Statsmodels ===")
+    print(anova_results, end='\n\n')
+
+    print(f"=== Перебор пар с помощью t критерия Стьюдента ===")
+    region_pairs = []
+    regions = list(sl['region'].unique())
+    for i in range(len(regions)):
+        for j in range(i + 1, len(regions)):
+            region_pairs.append((regions[i], regions[j]))
+
+    for region1, region2 in region_pairs:
+        print(region1, region2)
+        print(stats.ttest_ind(groups[region1], groups[region2]))
+
+    tukey = pairwise_tukeyhsd(endog=sl['bmi'], groups=sl['region'], alpha=0.05)
+
+    tukey.plot_simultaneous()
+    plt.vlines(x=31.5, ymin=-0.5, ymax=3.5, colors='r')
+    plt.title('Post-hoc тест Тьюки: сравнение BMI по регионам')
+    plt.tight_layout()
+    plt.show()
+
+    print(f"\n{tukey.summary()}")
+
+    model = ols('bmi ~ C(region) + C(sex) + C(region):C(sex)', data=sl).fit()
+    anova_results = sm.stats.anova_lm(model, typ=2)
+    print(f"\n=== Двухфакторный ANOVA тест через библиотеку Statsmodels ===")
+    print(anova_results, end='\n\n')
+
+    sl['combination'] = sl['region'] + " / " + sl['sex']
+
+    tukey = pairwise_tukeyhsd(endog=sl['bmi'], groups=sl['combination'], alpha=0.05)
+
+    tukey.plot_simultaneous()
+    plt.title('Post-hoc тест Тьюки: сравнение BMI по комбинациям региона и пола')
+    plt.tight_layout()
+    plt.show()
+
+    print(tukey.summary())
+
+
 if __name__ == '__main__':
-    task_1()
-    task_2()
+    #task_1()
+    #task_2()
+    task_3()
