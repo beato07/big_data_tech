@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
 
 
 def task_1():
@@ -30,5 +31,21 @@ def task_1():
     print(data.target_names)
 
 
+def task_2():
+    '''
+    Разбивает выборку на тренировочную и тестовую.
+    Тренировочная для обучения модели, тестовая для проверки ее качества.
+    '''
+    data = load_wine()
+    x_train, x_test, y_train, y_test = train_test_split(data.data, data.target,
+                                                        train_size=0.8, shuffle=True, random_state=271)
+
+    print(f'Размер для признаков обучающей выборки {x_train.shape}\n'
+          f'Размер для признаков тестовой выборки {x_test.shape}\n'
+          f'Размер для целевого показателя обучающей выборки {y_train.shape}\n'
+          f'Размер для показателя тестовой выборки {y_test.shape}')
+
+
 if __name__ == '__main__':
     task_1()
+    task_2()
