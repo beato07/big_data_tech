@@ -9,6 +9,18 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 
 
+def show_menu():
+    print("\n" + "=" * 50)
+    print("МЕНЮ ВЫБОРА ЗАДАНИЙ")
+    print("=" * 50)
+    print("1. Построить гистограммы баланса классов в датасете.")
+    print("2. Разделить данных на обучающую и тестовую выборки.")
+    print("3. Обучение трех моделей классификации (логистическая регрессия, SVM, KNN) с оценкой их качества и построением матриц ошибок.")
+    print('4. Выполняет все задания последовательно.')
+    print("0. Выход")
+    print("=" * 50)
+
+
 def task_1():
     '''
     Строит гистограмму, которая показывает баланс классов.
@@ -138,7 +150,34 @@ def task_3():
     plt.show()
 
 
-if __name__ == '__main__':
+def task_all():
     task_1()
     task_2()
     task_3()
+
+
+def main():
+    task_functions = {
+        '1': task_1,
+        '2': task_2,
+        '3': task_3,
+        '4': task_all
+    }
+
+    while True:
+        show_menu()
+        choice = input("\nВведите номер задания (0-4): ").strip()
+
+        if choice == '0':
+            print("Выход из программы.")
+            break
+        elif choice in task_functions:
+            task_functions[choice]()
+        else:
+            print("Неверный выбор. Попробуйте снова.")
+
+        input("\nНажмите Enter для продолжения...")
+
+
+if __name__ == '__main__':
+    main()
