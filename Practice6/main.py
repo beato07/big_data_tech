@@ -1,6 +1,6 @@
 import pandas as pd
 from matplotlib import pyplot as plt
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
 import numpy as np
@@ -82,9 +82,40 @@ def task_2():
         mode='markers',
         marker_color=features_df['Claster'],
         marker_size=4)])
+
+    fig.show()
+
+
+def task_3():
+    df = pd.read_csv('insurance.csv')
+
+    df_clean = df.drop_duplicates()
+    print(f'Number of unique values: {len(df_clean)}')
+
+    features = df_clean[['age', 'bmi', 'children']]
+
+    scaler = StandardScaler()
+    features_normalized = scaler.fit_transform(features)
+
+    features_df = pd.DataFrame(features_normalized, columns=features.columns)
+    print("\nСтатистики после нормализации:")
+    print(features_df.describe())
+
+    model13 = DBSCAN(eps=0.5, min_samples=5).fit(features_df)
+    features_df['Claster'] = model13.labels_
+
+    fig = go.Figure(data=[go.Scatter3d(
+        x=features_df['age'],
+        y=features_df['bmi'],
+        z=features_df['children'],
+        mode='markers',
+        marker_color=features_df['Claster'],
+        marker_size=4)])
+
     fig.show()
 
 
 if __name__ == '__main__':
-    task_1()
-    task_2()
+    # task_1()
+    # task_2()
+    task_3()
