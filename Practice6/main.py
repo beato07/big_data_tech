@@ -1,9 +1,10 @@
 import pandas as pd
 from matplotlib import pyplot as plt
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
 import numpy as np
+import plotly.graph_objects as go
 
 
 def task_1():
@@ -55,5 +56,35 @@ def task_1():
     return best_k
 
 
+def task_2():
+    df = pd.read_csv('insurance.csv')
+
+    df_clean = df.drop_duplicates()
+    print(f'Number of unique values: {len(df_clean)}')
+
+    features = df_clean[['age', 'bmi', 'children']]
+
+    scaler = StandardScaler()
+    features_normalized = scaler.fit_transform(features)
+
+    features_df = pd.DataFrame(features_normalized, columns=features.columns)
+    print("\nСтатистики после нормализации:")
+    print(features_df.describe())
+
+    model12 = AgglomerativeClustering(6, compute_distances=True)
+    clastering = model12.fit(features_df)
+    features_df['Claster'] = clastering.labels_
+
+    fig = go.Figure(data=[go.Scatter3d(
+        x=features_df['age'],
+        y=features_df['bmi'],
+        z=features_df['children'],
+        mode='markers',
+        marker_color=features_df['Claster'],
+        marker_size=4)])
+    fig.show()
+
+
 if __name__ == '__main__':
     task_1()
+    task_2()
