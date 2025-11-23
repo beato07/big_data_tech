@@ -1,10 +1,26 @@
+# Стандартные библиотеки Python
 import pandas as pd
+import numpy as np
 from matplotlib import pyplot as plt
+
+# Машинное обучение (scikit-learn)
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import silhouette_score
-import numpy as np
+
+# Визуализация
 import plotly.graph_objects as go
+
+
+def show_menu():
+    print("\n" + "=" * 50)
+    print("МЕНЮ ВЫБОРА ЗАДАНИЙ")
+    print("=" * 50)
+    print("1. K-MEANS - Кластеризация с автоматическим подбором кластеров.")
+    print("2. АГЛОМЕРАТИВНАЯ КЛАСТЕРИЗАЦИЯ - Иерархический метод.")
+    print("3. DBSCAN - Плотностная кластеризация.")
+    print("0. Выход")
+    print("=" * 50)
 
 
 def task_1():
@@ -71,7 +87,7 @@ def task_2():
     print("\nСтатистики после нормализации:")
     print(features_df.describe())
 
-    model12 = AgglomerativeClustering(6, compute_distances=True)
+    model12 = AgglomerativeClustering(3, compute_distances=True)
     clastering = model12.fit(features_df)
     features_df['Claster'] = clastering.labels_
 
@@ -115,7 +131,27 @@ def task_3():
     fig.show()
 
 
+def main():
+    task_functions = {
+        '1': task_1,
+        '2': task_2,
+        '3': task_3
+    }
+
+    while True:
+        show_menu()
+        choice = input("\nВведите номер задания (0-3): ").strip()
+
+        if choice == '0':
+            print("Выход из программы.")
+            break
+        elif choice in task_functions:
+            task_functions[choice]()
+        else:
+            print("Неверный выбор. Попробуйте снова.")
+
+        input("\nНажмите Enter для продолжения...")
+
+
 if __name__ == '__main__':
-    # task_1()
-    # task_2()
-    task_3()
+    main()
