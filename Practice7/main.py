@@ -2,47 +2,41 @@ import warnings
 warnings.filterwarnings('ignore')
 
 import pandas as pd
-
 import matplotlib.pyplot as plt
+import numpy as np
+import time
 
-# Библиотеки scikit-learn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import BaggingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
-
-warnings.filterwarnings('ignore')
+import catboost as cb
 
 
 def bagging():
-    # 1. Загрузка данных
     df = pd.read_csv('insurance.csv')
     print(df.head())
     print(f"Размер данных: {df.shape}")
 
-    # 2. Предобработка данных
-    # Кодирование категориальных признаков
     le = LabelEncoder()
-    df['sex'] = le.fit_transform(df['sex'])  # male=1, female=0
-    df['smoker'] = le.fit_transform(df['smoker'])  # yes=1, no=0
-    df['region'] = le.fit_transform(df['region'])  # регионы в числа
-
-    # Разделение на признаки и целевую переменную
+    df['sex'] = le.fit_transform(df['sex'])
+    df['smoker'] = le.fit_transform(df['smoker'])
+    df['region'] = le.fit_transform(df['region'])
     X = df.drop('charges', axis=1)
     y = df['charges']
 
-    # Нормализация числовых признаков
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    # Разделение на обучающую и тестовую выборки
     X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
     print(f"Обучающая выборка: {X_train.shape}, тестовая: {X_test.shape}")
 
-    # 3. Обучение одного решающего дерева (базовая модель)
+    start_time = time.time()
     single_tree = DecisionTreeRegressor(max_depth=5, random_state=42)
     single_tree.fit(X_train, y_train)
+    time_single = time.time() - start_time
+
     y_pred_single = single_tree.predict(X_test)
 
     mse_single = mean_squared_error(y_test, y_pred_single)
@@ -51,8 +45,9 @@ def bagging():
     print("\nОдна модель (решающее дерево):")
     print(f"MSE: {mse_single:.2f}")
     print(f"R²: {r2_single:.4f}")
+    print(f"Время работы модели: {time_single:.4f} секунд")
 
-    # 4. Обучение ансамбля Bagging
+    start_time = time.time()
     bagging_model = BaggingRegressor(
         estimator=DecisionTreeRegressor(max_depth=5),
         n_estimators=50,  # количество деревьев
@@ -61,6 +56,8 @@ def bagging():
     )
 
     bagging_model.fit(X_train, y_train)
+    time_bagging = time.time() - start_time
+
     y_pred_bagging = bagging_model.predict(X_test)
 
     mse_bagging = mean_squared_error(y_test, y_pred_bagging)
@@ -69,13 +66,13 @@ def bagging():
     print("\nАнсамбль Bagging (50 деревьев):")
     print(f"MSE: {mse_bagging:.2f}")
     print(f"R²: {r2_bagging:.4f}")
+    print(f"Время работы модели: {time_bagging:.4f} секунд")
 
-    # 5. Сравнение результатов
     print("\nСравнение качества моделей:")
     print(f"Улучшение R²: {r2_bagging - r2_single:.4f}")
     print(f"Улучшение MSE: {mse_single - mse_bagging:.2f} (чем больше, тем лучше)")
+    print(f"Разница во времени работы: {time_bagging - time_single:.4f} секунд")
 
-    # 6. Визуализация предсказаний
     plt.figure(figsize=(12, 5))
 
     # График для одного дерева
@@ -108,5 +105,63 @@ def bagging():
     print("4. MSE уменьшился на 4.9 млн, что подтверждает эффективность ансамбля.")
 
 
+def boosting():
+    data = pd.read_csv('insurance.csv')
+
+    data['sex'] = data['sex'].map({'male': 0, 'female': 1})
+    data['smoker'] = data['smoker'].map({'no': 0, 'yes': 1})
+    data = pd.get_dummies(data, columns=['region'], drop_first=True)
+
+    X = data.drop('charges', axis=1)
+    y = data['charges']
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    start_time = time.time()
+    model = cb.CatBoostRegressor(
+        iterations=500,
+        learning_rate=0.1,
+        depth=6,
+        verbose=100,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train, eval_set=(X_test, y_test))
+    time_model = time.time() - start_time
+
+    print(f"Время работы модели: {time_model:.4f} секунд")
+
+    y_pred = model.predict(X_test)
+    r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+    print(f"\nКачество модели:")
+    print(f"R² (коэффициент детерминации): {r2:.4f}")
+    print(f"RMSE (среднеквадратичная ошибка): {rmse:.2f}")
+
+    start_time = time.time()
+    tree_model = DecisionTreeRegressor(max_depth=6, random_state=42)
+    tree_model.fit(X_train, y_train)
+    time_tree = time.time() - start_time
+
+    tree_r2 = r2_score(y_test, tree_model.predict(X_test))
+
+    print(f"\nСравнение с деревом решений:")
+    print(f"CatBoost R²: {r2:.4f}")
+    print(f"Дерево решений R²: {tree_r2:.4f}")
+    print(f"Разница: {r2 - tree_r2:.4f}")
+    print(f"Время работы дерева решений: {time_tree:.4f} секунд")
+
+    # return {
+    #     'model': model,
+    #     'r2_score': r2,
+    #     'rmse': rmse,
+    #     'training_time': training_time
+    # }
+
+
 if __name__ == '__main__':
     bagging()
+    boosting()
