@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -202,3 +203,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+=======
+
+
+if __name__ == '__main__':
+    pass
+>>>>>>> parent of 146d0df (Implement Bagging method)
