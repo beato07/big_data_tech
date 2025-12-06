@@ -14,6 +14,17 @@ from sklearn.metrics import mean_squared_error, r2_score
 import catboost as cb
 
 
+def show_menu():
+    print("\n" + "=" * 50)
+    print("МЕНЮ ВЫБОРА ЗАДАНИЙ")
+    print("=" * 50)
+    print("1. Реализовать Bagging.")
+    print("2. Реализовать Boosting.")
+    print('3. Выполняет все задания последовательно.')
+    print("0. Выход")
+    print("=" * 50)
+
+
 def bagging():
     df = pd.read_csv('insurance.csv')
     print(df.head())
@@ -162,6 +173,32 @@ def boosting():
     # }
 
 
-if __name__ == '__main__':
+def task_all():
     bagging()
     boosting()
+
+
+def main():
+    task_functions = {
+        '1': bagging,
+        '2': boosting,
+        '3': task_all
+    }
+
+    while True:
+        show_menu()
+        choice = input("\nВведите номер задания (0-3): ").strip()
+
+        if choice == '0':
+            print("Выход из программы.")
+            break
+        elif choice in task_functions:
+            task_functions[choice]()
+        else:
+            print("Неверный выбор. Попробуйте снова.")
+
+        input("\nНажмите Enter для продолжения...")
+
+
+if __name__ == '__main__':
+    main()
